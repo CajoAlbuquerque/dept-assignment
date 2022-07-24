@@ -11,20 +11,21 @@ namespace MovieTrailersAPI.Controllers
     public class SearchController : ControllerBase
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _apiKey;
 
-        public SearchController(IHttpClientFactory httpClientFactory)
+
+        public SearchController(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _httpClientFactory = httpClientFactory;
+            _apiKey = config["TMDB:ApiKey"];
         }
 
 
         // GET api/search
         [HttpGet]
-        public async Task<ActionResult<TMDB_Search>> Get()
+        public async Task<ActionResult<TMDB_Search>> Get([FromQuery] string query)
         {
-            string test = "Avengers";
-            string api_key = "db4c6d1fd035910854cc32fe91a5c3a8";
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={test}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/search/movie?api_key={_apiKey}&query={query}");
 
             var httpClient = _httpClientFactory.CreateClient();
             var response = await httpClient.SendAsync(request);
@@ -34,7 +35,7 @@ namespace MovieTrailersAPI.Controllers
                 return BadRequest(response.Content.ReadAsStringAsync());
             }
 
-            TMDB_Search? searchResult = await JsonSerializer.DeserializeAsync<TMDB_Search>(await response.Content.ReadAsStreamAsync()); 
+            TMDB_Search? searchResult = await JsonSerializer.DeserializeAsync<TMDB_Search>(await response.Content.ReadAsStreamAsync());
 
             return Ok(searchResult);
         }
