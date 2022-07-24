@@ -1,4 +1,4 @@
-﻿using MovieTrailersAPI.Models;
+﻿using MovieTrailersAPI.Models.TMDB;
 using System.Text.Json;
 
 namespace MovieTrailersAPI.Providers
@@ -21,8 +21,7 @@ namespace MovieTrailersAPI.Providers
 
         public async Task<HttpResponseMessage> GetMovies(string query)
         {
-            var endpoint = String.Format(searchUrl, query);
-            var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(searchUrl, query));
             return await httpClient.SendAsync(request);
         }
 
@@ -36,6 +35,24 @@ namespace MovieTrailersAPI.Providers
             }
 
             return searchResult;
+        }
+
+        public async Task<HttpResponseMessage> GetTrailers(int movieId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(searchUrl, movieId));
+            return await httpClient.SendAsync(request);
+        }
+
+        public async Task<IEnumerable<TMDB_Video>> ProcessTrailersResponse(HttpResponseMessage response)
+        {
+            TMDB_MovieVideo? videoResults = await JsonSerializer.DeserializeAsync<TMDB_MovieVideo>(await response.Content.ReadAsStreamAsync());
+
+            if (videoResults == null)
+            {
+                Array.Empty<TMDB_Video>();
+            }
+
+            return videoResults.results.Where(video => video.type.Equals("trailer", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

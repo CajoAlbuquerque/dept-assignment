@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieTrailersAPI.Models;
+using MovieTrailersAPI.Models.TMDB;
 using MovieTrailersAPI.Providers;
 using System.Text.Json;
 
@@ -22,7 +23,7 @@ namespace MovieTrailersAPI.Controllers
         }
 
 
-        // GET api/search?query="Avengers"
+        // GET api/search?query=Avengers
         [HttpGet]
         [Route("search")]
         public async Task<ActionResult<TMDB_Search>> Get([FromQuery] string query)
@@ -35,9 +36,7 @@ namespace MovieTrailersAPI.Controllers
                 return BadRequest(response.Content.ReadAsStringAsync());
             }
 
-            var searchResult = await _provider.ProcessMoviesResponse(response);
-
-            return Ok(searchResult);
+            return Ok(await _provider.ProcessMoviesResponse(response));
         }
 
         // GET api/trailers/{id}
@@ -45,38 +44,63 @@ namespace MovieTrailersAPI.Controllers
         [Route("trailers/{id}")]
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/movie/{id}/videos?api_key=");
-
-            var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(request);
+            var response = await _provider.GetTrailers(id);
 
             if (!response.IsSuccessStatusCode)
             {
                 return BadRequest(response.Content.ReadAsStringAsync());
             }
 
-            TMDB_MovieVideo? videoResults = await JsonSerializer.DeserializeAsync<TMDB_MovieVideo>(await response.Content.ReadAsStreamAsync());
-
-            if (videoResults == null)
-            {
-                return Ok(Array.Empty<TMDB_Video>());
-            }
-
-            var trailerResults = videoResults.results.Where(video => video.type.Equals("trailer", StringComparison.OrdinalIgnoreCase));
-            return Ok(trailerResults);
+            return Ok(await _provider.ProcessMoviesResponse(response));
         }
 
-        // GET api/trailers/
+        // GET api/trailers?query=Avengers
         [HttpGet]
-        [Route("trailers/")]
-        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromBody] string query)
+        [Route("trailers")]
+        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromQuery] string query)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/search/movie?api_key=&query={query}");
+            IEnumerable<Movie> result = new List<Movie>();
 
-            var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(request);
+            // TODO: validate data
+            var moviesResponse = await _provider.GetMovies(query);
 
-            return Ok(response.Content.ReadAsStreamAsync());
+            if (!moviesResponse.IsSuccessStatusCode)
+            {
+                return BadRequest(moviesResponse.Content.ReadAsStringAsync());
+            }
+
+            var moviesResult = await _provider.ProcessMoviesResponse(moviesResponse);
+
+            if (moviesResult == null)
+            {
+                return BadRequest("No movies found for that query");
+            }
+
+            var tasks = moviesResult.results.Select(movie =>
+            {
+                var movieEntry = new Movie(movie.id);
+                _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
+                {
+                    var trailersResponse = task.Result;
+
+                    if (!trailersResponse.IsSuccessStatusCode) return;
+
+                    var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
+
+                    if (trailersResult == null) return;
+
+
+                    foreach (var trailer in trailersResult)
+                    {
+                        movieEntry.trailers.Append(new Trailer(trailer));
+                    }
+
+                    result.Append(movieEntry);
+                });
+            });
+
+            await Task.WhenAll(tasks);
+            return Ok(result);
         }
     }
 }
