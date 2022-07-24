@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MovieTrailersAPI.Models.TMDB
+﻿namespace MovieTrailersAPI.Models.TMDB
 {
     public class TMDB_MovieSearchResult
     {
-        [Key]
         public int id { get; set; }
         public string title { get; set; }
         public string original_title { get; set; }

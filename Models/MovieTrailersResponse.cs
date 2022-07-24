@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MovieTrailersAPI.Models
+﻿namespace MovieTrailersAPI.Models
 {
     public class MovieTrailersResponse
     {
         public int page { get; set; }
         public int total_pages { get; set; }
-
-        [Required]
         public IList<Movie> results { get; set; }
 
         public MovieTrailersResponse(int page, int total_pages, IList<Movie> results)

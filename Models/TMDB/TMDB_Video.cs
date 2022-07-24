@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MovieTrailersAPI.Models.TMDB
+﻿namespace MovieTrailersAPI.Models.TMDB
 {
     public class TMDB_Video
     {
-        [Key]
         public string id { get; set; }
         public string iso_639_1 { get; set; }
         public string iso_3166_1 { get; set; }

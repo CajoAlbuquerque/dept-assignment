@@ -1,13 +1,10 @@
 using MovieTrailersAPI.Models.TMDB;
-using System.ComponentModel.DataAnnotations;
 
 namespace MovieTrailersAPI.Models
 {
     public class Trailer
     {
-        [Key]
         public string id { get; set; }
-        [Required]
         public string? url { get; set; }
         public string? name { get; set; }
         public string? language { get; set; }

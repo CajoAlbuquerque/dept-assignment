@@ -1,15 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MovieTrailersAPI.Models
+﻿namespace MovieTrailersAPI.Models
 {
     public class Movie
     {
-        [Key]
         public int movie_id { get; set; }
         public string? name { get; set; }
         public string? language { get; set; }
-
-        [Required]
         public IList<Trailer> trailers { get; set; }
 
         public Movie(int movie_id, string name, string language, IList<Trailer> trailers)
