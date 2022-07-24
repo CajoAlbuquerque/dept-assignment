@@ -5,7 +5,7 @@ namespace MovieTrailersAPI.Models
     public class TMDB_MovieSearchResult
     {
         [Key]
-        public string movie_id {get; set;}
+        public int id {get; set;}
         public string title {get; set;}
         public string original_title {get; set;}
         public string original_language {get; set;}
