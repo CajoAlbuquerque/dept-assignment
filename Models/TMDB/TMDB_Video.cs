@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MovieTrailersAPI.Models
+namespace MovieTrailersAPI.Models.TMDB
 {
     public class TMDB_Video
     {
@@ -13,7 +13,7 @@ namespace MovieTrailersAPI.Models
         public string site { get; set; }
         public int size { get; set; }
         public string type { get; set; }
-        public Boolean official { get; set; }
+        public bool official { get; set; }
         public string published_at { get; set; }
     }
 }

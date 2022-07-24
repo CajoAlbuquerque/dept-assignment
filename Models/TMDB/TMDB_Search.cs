@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MovieTrailersAPI.Models
+namespace MovieTrailersAPI.Models.TMDB
 {
     public class TMDB_Search
     {
