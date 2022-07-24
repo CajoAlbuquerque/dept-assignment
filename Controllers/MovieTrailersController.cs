@@ -78,7 +78,7 @@ namespace MovieTrailersAPI.Controllers
 
             foreach (var movie in moviesResult.results)
             {
-                var movieEntry = new Movie(movie.id);
+                var movieEntry = new Movie(movie.id, movie.title, movie.original_language);
                 var trailersResponse = await _provider.GetTrailers(movie.id);
 
                 if (!trailersResponse.IsSuccessStatusCode)
@@ -126,7 +126,7 @@ namespace MovieTrailersAPI.Controllers
 
             var tasks = moviesResult.results.Select(movie =>
             {
-                var movieEntry = new Movie(movie.id);
+                var movieEntry = new Movie(movie.id, movie.title, movie.original_language);
                 return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
                 {
                     var trailersResponse = task.Result;
