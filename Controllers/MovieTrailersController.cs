@@ -73,33 +73,8 @@ namespace MovieTrailersAPI.Controllers
 
             if (moviesResult == null)
             {
-                return BadRequest("No movies found for that query");
+                return BadRequest("No movies found for the provided query");
             }
-
-            // var tasks = moviesResult.results.Select(movie =>
-            // {
-            //     var movieEntry = new Movie(movie.id);
-            //     return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
-            //     {
-            //         var trailersResponse = task.Result;
-
-            //         if (!trailersResponse.IsSuccessStatusCode) return;
-
-            //         var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
-
-            //         if (trailersResult != null)
-            //         {
-            //             foreach (var trailer in trailersResult)
-            //             {
-            //                 movieEntry.trailers.Append(new Trailer(trailer));
-            //             }
-            //         }
-
-            //         result.Append(movieEntry);
-            //     });
-            // });
-
-            // await Task.WhenAll(tasks);
 
             foreach (var movie in moviesResult.results)
             {
@@ -124,6 +99,55 @@ namespace MovieTrailersAPI.Controllers
                 result.Add(movieEntry);
             }
 
+            return Ok(result);
+        }
+
+        // GET api/movies/trailers?query=Avengers
+        [HttpGet]
+        [Route("movies/trailers-async")]
+        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailersAsync([FromQuery] string query)
+        {
+            IList<Movie> result = new List<Movie>();
+
+            // TODO: validate data
+            var moviesResponse = await _provider.GetMovies(query);
+
+            if (!moviesResponse.IsSuccessStatusCode)
+            {
+                return BadRequest(moviesResponse.Content.ReadAsStringAsync());
+            }
+
+            var moviesResult = await _provider.ProcessMoviesResponse(moviesResponse);
+
+            if (moviesResult == null)
+            {
+                return BadRequest("No movies found for the provided query");
+            }
+
+            var tasks = moviesResult.results.Select(movie =>
+            {
+                var movieEntry = new Movie(movie.id);
+                return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
+                {
+                    var trailersResponse = task.Result;
+
+                    if (!trailersResponse.IsSuccessStatusCode) return;
+
+                    var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
+
+                    if (trailersResult != null)
+                    {
+                        foreach (var trailer in trailersResult)
+                        {
+                            movieEntry.trailers.Add(new Trailer(trailer));
+                        }
+                    }
+
+                    result.Add(movieEntry);
+                });
+            });
+
+            await Task.WhenAll(tasks);
             return Ok(result);
         }
     }
