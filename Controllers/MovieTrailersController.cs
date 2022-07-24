@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieTrailersAPI.Models;
+using MovieTrailersAPI.Providers;
 using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,13 +12,13 @@ namespace MovieTrailersAPI.Controllers
     public class MovieTrailersController : ControllerBase
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _apiKey;
+        private readonly IMovieProvider _provider;
 
 
-        public MovieTrailersController(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public MovieTrailersController(IHttpClientFactory httpClientFactory, IConfiguration config, IMovieProvider provider)
         {
             _httpClientFactory = httpClientFactory;
-            _apiKey = config["TMDB:ApiKey"];
+            _provider = provider;
         }
 
 
@@ -26,22 +27,15 @@ namespace MovieTrailersAPI.Controllers
         [Route("search")]
         public async Task<ActionResult<TMDB_Search>> Get([FromQuery] string query)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/search/movie?api_key={_apiKey}&query={query}");
-
-            var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(request);
+            // TODO: check the input or filter it
+            var response = await _provider.GetMovies(query);
 
             if (!response.IsSuccessStatusCode)
             {
                 return BadRequest(response.Content.ReadAsStringAsync());
             }
 
-            TMDB_Search? searchResult = await JsonSerializer.DeserializeAsync<TMDB_Search>(await response.Content.ReadAsStreamAsync());
-
-            if (searchResult != null)
-            {
-                searchResult.results = searchResult.results.OrderByDescending(movie => movie.popularity);
-            }
+            var searchResult = await _provider.ProcessMoviesResponse(response);
 
             return Ok(searchResult);
         }
@@ -51,7 +45,7 @@ namespace MovieTrailersAPI.Controllers
         [Route("trailers/{id}")]
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/movie/{id}/videos?api_key={_apiKey}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/movie/{id}/videos?api_key=");
 
             var httpClient = _httpClientFactory.CreateClient();
             var response = await httpClient.SendAsync(request);
@@ -72,16 +66,17 @@ namespace MovieTrailersAPI.Controllers
             return Ok(trailerResults);
         }
 
-        // PUT api/search/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // GET api/trailers/
+        [HttpGet]
+        [Route("trailers/")]
+        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromBody] string query)
         {
-        }
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/search/movie?api_key=&query={query}");
 
-        // DELETE api/search/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var response = await httpClient.SendAsync(request);
+
+            return Ok(response.Content.ReadAsStreamAsync());
         }
     }
 }
