@@ -5,7 +5,7 @@ namespace MovieTrailersAPI.Models
     public class TMDB_MovieVideo
     {
         [Key]
-        public string id { get; set; }
+        public int id { get; set; }
         public IEnumerable<TMDB_Video> results { get; set; }
     }
 }
