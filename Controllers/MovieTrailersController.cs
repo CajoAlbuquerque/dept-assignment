@@ -39,24 +39,26 @@ namespace MovieTrailersAPI.Controllers
             return Ok(await _provider.ProcessMoviesResponse(response));
         }
 
-        // GET api/trailers/{id}
+        // GET api/movies/{id}/trailers
         [HttpGet]
-        [Route("trailers/{id}")]
+        [Route("movies/{id}/trailers")]
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers(int id)
         {
             var response = await _provider.GetTrailers(id);
+
+            var jsonString = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
                 return BadRequest(response.Content.ReadAsStringAsync());
             }
 
-            return Ok(await _provider.ProcessMoviesResponse(response));
+            return Ok(await _provider.ProcessTrailersResponse(response));
         }
 
-        // GET api/trailers?query=Avengers
+        // GET api/movies/trailers?query=Avengers
         [HttpGet]
-        [Route("trailers")]
+        [Route("movies/trailers")]
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromQuery] string query)
         {
             IEnumerable<Movie> result = new List<Movie>();
@@ -79,7 +81,7 @@ namespace MovieTrailersAPI.Controllers
             var tasks = moviesResult.results.Select(movie =>
             {
                 var movieEntry = new Movie(movie.id);
-                _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
+                return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
                 {
                     var trailersResponse = task.Result;
 
@@ -87,12 +89,12 @@ namespace MovieTrailersAPI.Controllers
 
                     var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
 
-                    if (trailersResult == null) return;
-
-
-                    foreach (var trailer in trailersResult)
+                    if (trailersResult != null)
                     {
-                        movieEntry.trailers.Append(new Trailer(trailer));
+                        foreach (var trailer in trailersResult)
+                        {
+                            movieEntry.trailers.Append(new Trailer(trailer));
+                        }
                     }
 
                     result.Append(movieEntry);

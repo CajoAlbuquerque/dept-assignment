@@ -39,12 +39,13 @@ namespace MovieTrailersAPI.Providers
 
         public async Task<HttpResponseMessage> GetTrailers(int movieId)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(searchUrl, movieId));
+            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(videosUrl, movieId));
             return await httpClient.SendAsync(request);
         }
 
         public async Task<IEnumerable<TMDB_Video>> ProcessTrailersResponse(HttpResponseMessage response)
         {
+            var jsonString = await response.Content.ReadAsStringAsync();
             TMDB_MovieVideo? videoResults = await JsonSerializer.DeserializeAsync<TMDB_MovieVideo>(await response.Content.ReadAsStreamAsync());
 
             if (videoResults == null)
