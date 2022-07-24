@@ -46,8 +46,6 @@ namespace MovieTrailersAPI.Controllers
         {
             var response = await _provider.GetTrailers(id);
 
-            var jsonString = await response.Content.ReadAsStringAsync();
-
             if (!response.IsSuccessStatusCode)
             {
                 return BadRequest(response.Content.ReadAsStringAsync());
@@ -61,7 +59,7 @@ namespace MovieTrailersAPI.Controllers
         [Route("movies/trailers")]
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromQuery] string query)
         {
-            IEnumerable<Movie> result = new List<Movie>();
+            IList<Movie> result = new List<Movie>();
 
             // TODO: validate data
             var moviesResponse = await _provider.GetMovies(query);
@@ -78,30 +76,54 @@ namespace MovieTrailersAPI.Controllers
                 return BadRequest("No movies found for that query");
             }
 
-            var tasks = moviesResult.results.Select(movie =>
+            // var tasks = moviesResult.results.Select(movie =>
+            // {
+            //     var movieEntry = new Movie(movie.id);
+            //     return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
+            //     {
+            //         var trailersResponse = task.Result;
+
+            //         if (!trailersResponse.IsSuccessStatusCode) return;
+
+            //         var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
+
+            //         if (trailersResult != null)
+            //         {
+            //             foreach (var trailer in trailersResult)
+            //             {
+            //                 movieEntry.trailers.Append(new Trailer(trailer));
+            //             }
+            //         }
+
+            //         result.Append(movieEntry);
+            //     });
+            // });
+
+            // await Task.WhenAll(tasks);
+
+            foreach (var movie in moviesResult.results)
             {
                 var movieEntry = new Movie(movie.id);
-                return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
+                var trailersResponse = await _provider.GetTrailers(movie.id);
+
+                if (!trailersResponse.IsSuccessStatusCode)
                 {
-                    var trailersResponse = task.Result;
+                    return BadRequest(trailersResponse.Content.ReadAsStringAsync());
+                }
 
-                    if (!trailersResponse.IsSuccessStatusCode) return;
+                var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
 
-                    var trailersResult = await _provider.ProcessTrailersResponse(trailersResponse);
-
-                    if (trailersResult != null)
+                if (trailersResult != null)
+                {
+                    foreach (var trailer in trailersResult)
                     {
-                        foreach (var trailer in trailersResult)
-                        {
-                            movieEntry.trailers.Append(new Trailer(trailer));
-                        }
+                        movieEntry.trailers.Add(new Trailer(trailer));
                     }
+                }
 
-                    result.Append(movieEntry);
-                });
-            });
+                result.Add(movieEntry);
+            }
 
-            await Task.WhenAll(tasks);
             return Ok(result);
         }
     }

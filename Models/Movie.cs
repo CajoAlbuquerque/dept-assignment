@@ -7,9 +7,9 @@ namespace MovieTrailersAPI.Models
         [Key]
         public int movie_id { get; set; }
         [Required]
-        public IEnumerable<Trailer> trailers { get; set; }
+        public IList<Trailer> trailers { get; set; }
 
-        public Movie(int movie_id, IEnumerable<Trailer> trailers)
+        public Movie(int movie_id, IList<Trailer> trailers)
         {
             this.movie_id = movie_id;
             this.trailers = trailers;
