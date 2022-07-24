@@ -26,10 +26,10 @@ namespace MovieTrailersAPI.Controllers
         // GET api/search?query=Avengers
         [HttpGet]
         [Route("search")]
-        public async Task<ActionResult<TMDB_Search>> Get([FromQuery] string query)
+        public async Task<ActionResult<TMDB_Search>> Get([FromQuery] string query, [FromQuery] int page = 1)
         {
             // TODO: check the input or filter it
-            var response = await _provider.GetMovies(query);
+            var response = await _provider.GetMovies(query, page);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -57,12 +57,12 @@ namespace MovieTrailersAPI.Controllers
         // GET api/movies/trailers?query=Avengers
         [HttpGet]
         [Route("movies/trailers")]
-        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromQuery] string query)
+        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromQuery] string query, [FromQuery] int page = 1)
         {
-            IList<Movie> result = new List<Movie>();
+            var finalResponse = new MovieTrailersResponse(page);
 
             // TODO: validate data
-            var moviesResponse = await _provider.GetMovies(query);
+            var moviesResponse = await _provider.GetMovies(query, page);
 
             if (!moviesResponse.IsSuccessStatusCode)
             {
@@ -96,21 +96,21 @@ namespace MovieTrailersAPI.Controllers
                     }
                 }
 
-                result.Add(movieEntry);
+                finalResponse.results.Add(movieEntry);
             }
 
-            return Ok(result);
+            return Ok(finalResponse);
         }
 
         // GET api/movies/trailers?query=Avengers
         [HttpGet]
         [Route("movies/trailers-async")]
-        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailersAsync([FromQuery] string query)
+        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailersAsync([FromQuery] string query, [FromQuery] int page = 1)
         {
-            IList<Movie> result = new List<Movie>();
+            var finalResponse = new MovieTrailersResponse(page);
 
             // TODO: validate data
-            var moviesResponse = await _provider.GetMovies(query);
+            var moviesResponse = await _provider.GetMovies(query, page);
 
             if (!moviesResponse.IsSuccessStatusCode)
             {
@@ -123,6 +123,8 @@ namespace MovieTrailersAPI.Controllers
             {
                 return BadRequest("No movies found for the provided query");
             }
+
+            finalResponse.total_pages = moviesResult.total_pages;
 
             var tasks = moviesResult.results.Select(movie =>
             {
@@ -143,12 +145,12 @@ namespace MovieTrailersAPI.Controllers
                         }
                     }
 
-                    result.Add(movieEntry);
+                    finalResponse.results.Add(movieEntry);
                 });
             });
 
             await Task.WhenAll(tasks);
-            return Ok(result);
+            return Ok(finalResponse);
         }
     }
 }

@@ -15,13 +15,13 @@ namespace MovieTrailersAPI.Providers
         {
             httpClient = client;
             apiKey = config["TMDB:ApiKey"];
-            searchUrl = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query={0}";
+            searchUrl = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query={0}&page={1}";
             videosUrl = "https://api.themoviedb.org/3/movie/{0}/videos?api_key=" + apiKey;
         }
 
-        public async Task<HttpResponseMessage> GetMovies(string query)
+        public async Task<HttpResponseMessage> GetMovies(string query, int page)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(searchUrl, query));
+            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(searchUrl, query, page));
             return await httpClient.SendAsync(request);
         }
 
