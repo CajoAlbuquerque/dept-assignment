@@ -12,10 +12,17 @@ namespace MovieTrailersAPI.Providers
 
         public HttpClient httpClient { get; }
 
-        public TMDBProvider(IConfiguration config, HttpClient client)
+        public TMDBProvider(IWebHostEnvironment environment, IConfiguration config, HttpClient client)
         {
+            if (environment.IsDevelopment()){
+                apiKey = config["TMDB:ApiKey"];
+            }
+            else{
+                Console.WriteLine(Environment.GetEnvironmentVariable("API_KEY"));
+                apiKey = Environment.GetEnvironmentVariable("API_KEY");
+            }
+
             httpClient = client;
-            apiKey = config["TMDB:ApiKey"];
             searchUrl = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query={0}&page={1}";
             videosUrl = "https://api.themoviedb.org/3/movie/{0}/videos?api_key=" + apiKey;
             movieUrl = "https://api.themoviedb.org/3/movie/{0}?api_key=" + apiKey;
