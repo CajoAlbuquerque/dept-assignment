@@ -8,6 +8,8 @@ namespace MovieTrailersAPI.Providers
         public Task<TMDB_Search> ProcessMoviesResponse(HttpResponseMessage response);
         public Task<HttpResponseMessage> GetTrailers(int movieId);
         public Task<IEnumerable<TMDB_Video>> ProcessTrailersResponse(HttpResponseMessage response);
+        public Task<HttpResponseMessage> GetMovieDetails(int movieId);
+        public Task<TMDB_MovieSearchResult> ProcessMovieDetailsResponse(HttpResponseMessage response);
 
     }
 }

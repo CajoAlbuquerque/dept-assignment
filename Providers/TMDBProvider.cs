@@ -7,6 +7,7 @@ namespace MovieTrailersAPI.Providers
     {
         private string searchUrl { get; }
         private string videosUrl { get; }
+        private string movieUrl { get; }
         private string apiKey { get; }
 
         public HttpClient httpClient { get; }
@@ -17,6 +18,7 @@ namespace MovieTrailersAPI.Providers
             apiKey = config["TMDB:ApiKey"];
             searchUrl = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query={0}&page={1}";
             videosUrl = "https://api.themoviedb.org/3/movie/{0}/videos?api_key=" + apiKey;
+            movieUrl = "https://api.themoviedb.org/3/movie/{0}?api_key=" + apiKey;
         }
 
         public async Task<HttpResponseMessage> GetMovies(string query, int page)
@@ -54,6 +56,18 @@ namespace MovieTrailersAPI.Providers
             }
 
             return videoResults.results.Where(video => video.type.Equals("trailer", StringComparison.OrdinalIgnoreCase));
+        }
+
+        public async Task<HttpResponseMessage> GetMovieDetails(int movieId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, String.Format(movieUrl, movieId));
+            return await httpClient.SendAsync(request);
+        }
+
+        public async Task<TMDB_MovieSearchResult> ProcessMovieDetailsResponse(HttpResponseMessage response)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            return await JsonSerializer.DeserializeAsync<TMDB_MovieSearchResult>(await response.Content.ReadAsStreamAsync());
         }
     }
 }
