@@ -49,7 +49,7 @@ namespace MovieTrailersAPI.Controllers
         // GET api/movies/{id}
         [HttpGet]
         [Route("movies/{id}")]
-        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetMovie(int id)
+        public async Task<ActionResult<Movie>> GetMovie(int id)
         {
             var trailersResponse = await _provider.GetTrailers(id);
             var movieResponse = await _provider.GetMovieDetails(id);
@@ -97,7 +97,7 @@ namespace MovieTrailersAPI.Controllers
 
         //     foreach (var movie in moviesResult.results)
         //     {
-        //         var movieEntry = new Movie(movie.id, movie.title, movie.original_language);
+        //         var movieEntry = new Movie(movie);
         //         var trailersResponse = await _provider.GetTrailers(movie.id);
 
         //         if (!trailersResponse.IsSuccessStatusCode)
@@ -124,7 +124,7 @@ namespace MovieTrailersAPI.Controllers
         // GET api/movies/trailers?query=Avengers&page=1
         [HttpGet]
         [Route("movies/trailers")]
-        public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailersAsync([FromQuery] string query, [FromQuery] int page = 1)
+        public async Task<ActionResult<MovieTrailersResponse>> GetTrailersAsync([FromQuery] string query, [FromQuery] int page = 1)
         {
             var finalResponse = new MovieTrailersResponse(page);
             var moviesResponse = await _provider.GetMovies(query, page);
@@ -145,7 +145,7 @@ namespace MovieTrailersAPI.Controllers
 
             var tasks = moviesResult.results.Select(movie =>
             {
-                var movieEntry = new Movie(movie.id, movie.title, movie.original_language);
+                var movieEntry = new Movie(movie);
                 return _provider.GetTrailers(movie.id).ContinueWith(async (task) =>
                 {
                     var trailersResponse = task.Result;

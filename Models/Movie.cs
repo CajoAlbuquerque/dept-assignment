@@ -21,9 +21,8 @@ namespace MovieTrailersAPI.Models
             this.trailers = trailers;
         }
 
-        public Movie(int movie_id, string title, string language) : this(movie_id, title, language, new List<Trailer>()) { }
-
-        public Movie(TMDB_MovieSearchResult movie, IList<Trailer> trailers) {
+        public Movie(TMDB_MovieSearchResult movie, IList<Trailer> trailers)
+        {
             this.movie_id = movie.id;
             this.title = movie.title;
             this.original_title = movie.original_title;
@@ -33,5 +32,7 @@ namespace MovieTrailersAPI.Models
             this.adult = movie.adult;
             this.trailers = trailers;
         }
+
+        public Movie(TMDB_MovieSearchResult movie) : this(movie, new List<Trailer>()) { }
     }
 }
