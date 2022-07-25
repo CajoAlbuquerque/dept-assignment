@@ -2,9 +2,6 @@
 using MovieTrailersAPI.Models;
 using MovieTrailersAPI.Models.TMDB;
 using MovieTrailersAPI.Providers;
-using System.Text.Json;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MovieTrailersAPI.Controllers
 {
@@ -12,13 +9,10 @@ namespace MovieTrailersAPI.Controllers
     [ApiController]
     public class MovieTrailersController : ControllerBase
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IMovieProvider _provider;
 
-
-        public MovieTrailersController(IHttpClientFactory httpClientFactory, IConfiguration config, IMovieProvider provider)
+        public MovieTrailersController(IMovieProvider provider)
         {
-            _httpClientFactory = httpClientFactory;
             _provider = provider;
         }
 
@@ -28,7 +22,6 @@ namespace MovieTrailersAPI.Controllers
         [Route("search")]
         public async Task<ActionResult<TMDB_Search>> Get([FromQuery] string query, [FromQuery] int page = 1)
         {
-            // TODO: check the input or filter it
             var response = await _provider.GetMovies(query, page);
 
             if (!response.IsSuccessStatusCode)
@@ -60,8 +53,6 @@ namespace MovieTrailersAPI.Controllers
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailers([FromQuery] string query, [FromQuery] int page = 1)
         {
             var finalResponse = new MovieTrailersResponse(page);
-
-            // TODO: validate data
             var moviesResponse = await _provider.GetMovies(query, page);
 
             if (!moviesResponse.IsSuccessStatusCode)
@@ -108,8 +99,6 @@ namespace MovieTrailersAPI.Controllers
         public async Task<ActionResult<IEnumerable<TMDB_Video>>> GetTrailersAsync([FromQuery] string query, [FromQuery] int page = 1)
         {
             var finalResponse = new MovieTrailersResponse(page);
-
-            // TODO: validate data
             var moviesResponse = await _provider.GetMovies(query, page);
 
             if (!moviesResponse.IsSuccessStatusCode)
