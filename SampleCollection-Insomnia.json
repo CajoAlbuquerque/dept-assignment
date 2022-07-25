@@ -1,0 +1,254 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2022-07-25T00:52:44.436Z",
+    "__export_source": "insomnia.desktop.app:v2022.4.2",
+    "resources": [
+        {
+            "_id": "req_fa9b5e6b3ec644818b1c2d151cd366ac",
+            "parentId": "fld_57be2fbd050544a9bf979f1c1d781d10",
+            "modified": 1658710148382,
+            "created": 1658703822492,
+            "url": "https://localhost:8000/api/search",
+            "name": "Search Movies",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [
+                {
+                    "id": "pair_56f7f43ae99d476b8652e8b2d9783528",
+                    "name": "query",
+                    "value": "Avengers",
+                    "description": ""
+                },
+                {
+                    "id": "pair_c1f658dc20844aceaa288e17a28e4176",
+                    "name": "api_key",
+                    "value": "{{ _.api_key }}",
+                    "description": ""
+                },
+                {
+                    "id": "pair_58564895230a4e34aaa7e39456792920",
+                    "name": "page",
+                    "value": "3",
+                    "description": ""
+                }
+            ],
+            "headers": [],
+            "authentication": {},
+            "metaSortKey": -1658703822492,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_57be2fbd050544a9bf979f1c1d781d10",
+            "parentId": "wrk_3173e84dfebb424386e9b3328463d305",
+            "modified": 1658688977774,
+            "created": 1658688977774,
+            "name": "MovieTrailersAPI",
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1658688977774,
+            "_type": "request_group"
+        },
+        {
+            "_id": "wrk_3173e84dfebb424386e9b3328463d305",
+            "parentId": null,
+            "modified": 1658664546113,
+            "created": 1658664546113,
+            "name": "DEPT Assignment",
+            "description": "",
+            "scope": "collection",
+            "_type": "workspace"
+        },
+        {
+            "_id": "req_ed7988e3fb5e49d88ac83cb459282496",
+            "parentId": "fld_57be2fbd050544a9bf979f1c1d781d10",
+            "modified": 1658710090983,
+            "created": 1658703708532,
+            "url": "https://localhost:8000/api/movies/414906/trailers",
+            "name": "Get Trailers by Movie ID",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [
+                {
+                    "id": "pair_35e85c982ead46f095ef181fb4fe4990",
+                    "name": "api_key",
+                    "value": "{{ _.api_key }}",
+                    "description": ""
+                }
+            ],
+            "headers": [],
+            "authentication": {},
+            "metaSortKey": -1658703708532,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_b0857f73e5c14c39890ecf9982018ffd",
+            "parentId": "fld_57be2fbd050544a9bf979f1c1d781d10",
+            "modified": 1658710102051,
+            "created": 1658703511425,
+            "url": "https://localhost:8000/api/movies/trailers-sync",
+            "name": "Get MovieTrailersSlow",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [
+                {
+                    "id": "pair_d7b06084bfb54558be4b9c5bf22b87d3",
+                    "name": "query",
+                    "value": "Avengers",
+                    "description": ""
+                },
+                {
+                    "id": "pair_2b790924359f43b28fd9ba1daff96551",
+                    "name": "api_key",
+                    "value": "{{ _.api_key }}",
+                    "description": ""
+                },
+                {
+                    "id": "pair_70c0f15cda9c40f38a80b0e817d297a3",
+                    "name": "page",
+                    "value": "1",
+                    "description": ""
+                }
+            ],
+            "headers": [],
+            "authentication": {},
+            "metaSortKey": -1658703511425,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_77e5c60c1d5046a487b97808c5912727",
+            "parentId": "fld_57be2fbd050544a9bf979f1c1d781d10",
+            "modified": 1658710103493,
+            "created": 1658703699057,
+            "url": "https://localhost:8000/api/movies/trailers",
+            "name": "Get MovieTrailers",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [
+                {
+                    "id": "pair_d7b06084bfb54558be4b9c5bf22b87d3",
+                    "name": "query",
+                    "value": "Avengers",
+                    "description": ""
+                },
+                {
+                    "id": "pair_2b790924359f43b28fd9ba1daff96551",
+                    "name": "api_key",
+                    "value": "{{ _.api_key }}",
+                    "description": ""
+                },
+                {
+                    "id": "pair_ebd0f751306b4d15a3968385a371360c",
+                    "name": "page",
+                    "value": "2",
+                    "description": ""
+                }
+            ],
+            "headers": [],
+            "authentication": {},
+            "metaSortKey": -1658684809843.5,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_5937b324fc324b1e9ca44b11af8012b2",
+            "parentId": "fld_57be2fbd050544a9bf979f1c1d781d10",
+            "modified": 1658710104428,
+            "created": 1658709591649,
+            "url": "https://localhost:8000/api/movies/257346",
+            "name": "Get Movie Details",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [
+                {
+                    "id": "pair_2b790924359f43b28fd9ba1daff96551",
+                    "name": "api_key",
+                    "value": "{{ _.api_key }}",
+                    "description": ""
+                }
+            ],
+            "headers": [],
+            "authentication": {},
+            "metaSortKey": -1658675459052.75,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "env_bd842ff028b29464ff0cd95d0cbce0bffafe3822",
+            "parentId": "wrk_3173e84dfebb424386e9b3328463d305",
+            "modified": 1658665232045,
+            "created": 1658664546116,
+            "name": "Base Environment",
+            "data": {
+                "api_key": "db4c6d1fd035910854cc32fe91a5c3a8"
+            },
+            "dataPropertyOrder": {
+                "&": [
+                    "api_key"
+                ]
+            },
+            "color": null,
+            "isPrivate": false,
+            "metaSortKey": 1658664546116,
+            "_type": "environment"
+        },
+        {
+            "_id": "jar_bd842ff028b29464ff0cd95d0cbce0bffafe3822",
+            "parentId": "wrk_3173e84dfebb424386e9b3328463d305",
+            "modified": 1658664546118,
+            "created": 1658664546118,
+            "name": "Default Jar",
+            "cookies": [],
+            "_type": "cookie_jar"
+        },
+        {
+            "_id": "spc_916b943584fd48d6a5ed54ea4fbc2302",
+            "parentId": "wrk_3173e84dfebb424386e9b3328463d305",
+            "modified": 1658664546113,
+            "created": 1658664546113,
+            "fileName": "DEPT Assignment",
+            "contents": "",
+            "contentType": "yaml",
+            "_type": "api_spec"
+        }
+    ]
+}
